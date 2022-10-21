@@ -1,0 +1,4 @@
+The repo contains following coding solutions
+
+1. Missionaries and cannibals problem solved using bfs, dfs, greedy best first search, A* algorithem
+2. 8 Queen puzzle solved using hill climbing algorithem
