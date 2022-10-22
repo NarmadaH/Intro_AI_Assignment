@@ -253,7 +253,7 @@ class queen:
 
 if __name__ == "__main__":
  
-    mboard = queen(1000, False, 2)
+    mboard = queen(1000, False, 1)
 
     print ("8 Queens Problem - Hill Climbing")
     mboard.printstatistics()

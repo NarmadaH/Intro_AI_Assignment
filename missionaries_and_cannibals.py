@@ -265,11 +265,12 @@ class searchAlgorithems():
 
 
 if __name__ == "__main__":
+
     # Part 2
-    # searchAlgorithems('bfs', 'S', 'Z')
-    # searchAlgorithems('dfs', 'S', 'Z')
+    searchAlgorithems('bfs', 'S', 'Z')
+    searchAlgorithems('dfs', 'S', 'Z')
 
     # Part 3
     searchAlgorithems('astar', 'S', 'Z', 1)
     searchAlgorithems('astar', 'S', 'Z', 2)
-    # searchAlgorithems('greedybfs', 'S', 'Z')
+    searchAlgorithems('greedybfs', 'S', 'Z')
