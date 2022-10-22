@@ -1,7 +1,5 @@
 
-from multiprocessing.reduction import steal_handle
 import queue
-from re import A
 
 
 class stateSpaceInfo():
@@ -16,6 +14,7 @@ class stateSpaceInfo():
 
         self.nodeGraph = self.generateNodes()
 
+    # node ={cannibolsRight, missonariesRight, boatRight, cannibolsLeft, missonariesLeft, boatLeft}
     def generateNodes(self):
         nodeDefs = {'S' : [3,3,1,0,0,0], 'A' : [1,3,0,2,0,1], 'B': [2,3,0,1,0,1], 'C': [2,2,0,1,1,1],
                     'D': [2,3,1,1,0,0], 'E': [0,3,0,3,0,1], 'F': [1,3,1,2,0,0], 'G': [1,1,0,2,2,1],
@@ -31,16 +30,22 @@ class stateSpaceInfo():
         return stateSpaceGraph
 
 
-    def calculateHeuristicVal(self, node):
+    def calculateHeuristicVal(self, node, heuristic):
 
         heuristicVal = 0
         nodeValues = self.nodeGraph[node]
-        # heuristicVal = (nodeValues[0]+nodeValues[1])/2
 
-        heuristicVal = (nodeValues[0]*nodeValues[1])
+        # h1(n) = (cannibolsRight + missonariesRight) - 1 
+        if heuristic == 1:
+            heuristicVal = (nodeValues[0]+nodeValues[1])/2
+
+        # h2(n) = (cannibolsRight + missonariesRight) / boat 
+        if heuristic == 2:
+            heuristicVal = (nodeValues[0]+nodeValues[1])/2
 
         # print ('Heuricstic : Node', node, 'Value ', heuristicVal)
         return heuristicVal
+
 
     def getNeighbors(self, node):
         return self.stateSpaceGraph[node]    
@@ -49,15 +54,15 @@ class stateSpaceInfo():
 
 
 class searchAlgorithems():
-    def __init__(self, runAlgo, startNode, goalNode):
+    def __init__(self, runAlgo, startNode, goalNode, heuristic=0):
             print ("=======Start searchAlgorithems=======")
 
             self.algo = runAlgo
             self.stateSpace = stateSpaceInfo(startNode, goalNode)
-            self.runAlgorithem(self.algo, self.stateSpace)
+            self.runAlgorithem(self.algo, self.stateSpace, heuristic)
 
 
-    def runAlgorithem (self, algoName, stateSpace):
+    def runAlgorithem (self, algoName, stateSpace, heuristic):
        
         print ("=======Start runAlgorithem=======")
 
@@ -76,12 +81,13 @@ class searchAlgorithems():
             results = self.greedyBestFirstSearch(stateSpace)
 
         elif algoName == 'astar':   
-            results = self.aStarAlgorithem(stateSpace)
+            results = self.aStarAlgorithem(stateSpace, heuristic)
 
         else:
             print("Error - Unkown algo") 
 
-        print('Run Algo : ', algoName, "Solution", results)       
+        print('Run Algo : ', algoName, "Solution :", results)
+        print('Number of steps to reach the goal :',  len(results) )      
 
 
 
@@ -113,7 +119,7 @@ class searchAlgorithems():
 
 
     def depthFirstSearch(self, stateSpace):
-        print ("=======Start breathFirstSearch=======")  
+        print ("=======Start deapthFirstSearch=======")  
 
         visitedList = set()
         resultList = []
@@ -132,7 +138,7 @@ class searchAlgorithems():
         return resultList           
 
     
-    def aStarAlgorithem (self, stateSpace):
+    def aStarAlgorithem (self, stateSpace, heuristic):
         print ("=======Start aStarAlgorithem=======")
 
         openList = set([stateSpace.startNode])
@@ -148,11 +154,11 @@ class searchAlgorithems():
             n = None
 
             for v in openList:
-                if n == None or distance[v] + stateSpace.calculateHeuristicVal(v) < distance[n] + stateSpace.calculateHeuristicVal(n):
+                if n == None or distance[v] + stateSpace.calculateHeuristicVal(v, heuristic) < distance[n] + stateSpace.calculateHeuristicVal(n, heuristic):
                     n = v;
 
             if n == None:
-                print('Path does not exist!')
+                print('quit - a path do not exist')
                 return None
 
 
@@ -167,7 +173,7 @@ class searchAlgorithems():
 
                 reconstPath.reverse()
 
-                # print('Path found: {}'.format(reconstPath))
+                print('Successful - Path found')
                 return reconstPath
 
             
@@ -189,7 +195,7 @@ class searchAlgorithems():
             openList.remove(n)
             closedList.add(n)
 
-        print('Path does not exist!')
+        print('quit - a path do not exist')
         return None
 
 
@@ -213,7 +219,7 @@ class searchAlgorithems():
                     n = v;
 
             if n == None:
-                print('Path does not exist!')
+                print('quit - a path do not exist')
                 return None
 
 
@@ -228,7 +234,7 @@ class searchAlgorithems():
 
                 reconstPath.reverse()
 
-                # print('Path found: {}'.format(reconstPath))
+                print('Successful - Path found')
                 return reconstPath
 
             
@@ -250,7 +256,7 @@ class searchAlgorithems():
             openList.remove(n)
             closedList.add(n)
 
-        print('Path does not exist!')
+        print('quit - a path do not exist')
         return None
 
 
@@ -259,8 +265,11 @@ class searchAlgorithems():
 
 
 if __name__ == "__main__":
-    searchAlgorithems('bfs', 'S', 'Z')
-    searchAlgorithems('dfs', 'S', 'Z')
-    searchAlgorithems('greedybfs', 'S', 'Z')
-    searchAlgorithems('astar', 'S', 'Z')
+    # Part 2
+    # searchAlgorithems('bfs', 'S', 'Z')
+    # searchAlgorithems('dfs', 'S', 'Z')
 
+    # Part 3
+    # searchAlgorithems('astar', 'S', 'Z', 1)
+    # searchAlgorithems('astar', 'S', 'Z', 2)
+    searchAlgorithems('greedybfs', 'S', 'Z')
