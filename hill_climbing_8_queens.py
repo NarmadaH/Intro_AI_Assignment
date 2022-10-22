@@ -8,12 +8,7 @@ class chessBoard:
   
     def __init__(self):
 
-        print ("=======Start ChessBoard=======")
-
-
-        # for i in range(0,8):
-        #     for j in range(0,8):
-        #         self.chessBoard[i][j] = 0
+        # print ("=======Start ChessBoard=======")
 
         self.chessBoard = [[0 for i in range(0,8)] for j in range(0,8)]
 
@@ -26,7 +21,7 @@ class chessBoard:
                     self.chessBoard[rowRandom][colRandom] = "1"
                     break
 
-    # print - delete             
+                
     def __repr__(self):
         mstr = ""
         for i in range(0,8):
@@ -41,27 +36,36 @@ class queen:
         self.totRuns = runCount
         self.totSuccusful = 0
         self.totSteps = 0
+        self.totStepsSuccusful = 0
+        self.totStepsFail = 0
         self.printing = printing
+        self.isSucsses = False
 
-        print ("=======Start Queen=======")
+        # print ("=======Start Queen=======")
 
         for i in range(0, self.totRuns):
 
-            print ("=======Start Runs=======")
-            
-            
-            print ("====================")
-            print ("BOARD",i)
-            print ("====================")
+            # print ("=======Start Runs=======")
+            if self.printing == True: 
+                print ("====================")
+                print ("BOARD",i)
+                print ("====================")
 
+            self.isSucsses = False
             self.hostBoard = chessBoard()
             self.cost = self.calHeuristicVal(self.hostBoard)
-            self.hillClimbingSearch()
+            climbStepCount = self.hillClimbingSearch()
+
+            if self.isSucsses == True:
+                self.totStepsSuccusful +=climbStepCount
+            else:
+                self.totStepsFail +=climbStepCount
+
 
 
     def calHeuristicVal(self, myBoard):
 
-        print ("=======Start calHeuristicVal=======")
+        # print ("=======Start calHeuristicVal=======")
         # print(myBoard)
     
         totRowColCost = 0
@@ -117,26 +121,27 @@ class queen:
 
 
         totBoardCost = (totRowColCost + totDiagCost)/2
-        print ("Board Tot Cost", totBoardCost)
+        # print ("Board Tot Cost", totBoardCost)
         return totBoardCost
 
 
     # Generate Board when dioganal moves are allowed
     def generateBestBoardWithDioganal(self):
 
-        print ("=======Start generateBestBoardWithDioganal=======")
+        # print ("=======Start generateBestBoardWithDioganal=======")
         # print ("Self chess", self.hostBoard.chessBoard)
 
-        childBoard = self.hostBoard      
+        childBoard = self.hostBoard  
+        childBoard = [[0 for i in range(0,8)] for j in range(0,8)]    
         currentLow = self.calHeuristicVal(self.hostBoard)
 
-        print ("Self current low", currentLow)
+        # print ("Self current low", currentLow)
         sameCostChildren = []
 
         for row in range(0,8):
             for col in range(0,8):
                 if self.hostBoard.chessBoard[row][col] == "1":
-                    print ("Self chess", self.hostBoard.chessBoard)
+                    # print ("Self chess", self.hostBoard.chessBoard)
                     
                     for tem_row in range(0,8):
                         for tem_col in range(0,8):
@@ -161,8 +166,8 @@ class queen:
                                         x = random.randint(0, len(sameCostChildren) - 1)
                                         childBoard = sameCostChildren[x]
 
-                                        print ("sameCostChildren", sameCostChildren)
-                                        print ("Temp childBoard", childBoard)
+                                        # print ("sameCostChildren", sameCostChildren)
+                                        # print ("Temp childBoard", childBoard)
                                
                         
         self.hostBoard = childBoard
@@ -174,7 +179,7 @@ class queen:
     def generateBestBoardWithoutDioganal(self):
 
         tempLow = self.calHeuristicVal(self.hostBoard)
-        lowestCostBoard = self.hostBoard
+        lowestCostBoard = self.hostBoard        
 
         for row in range(0,8):
             for col in range(0,8):
@@ -200,16 +205,18 @@ class queen:
 
     def hillClimbingSearch(self):
 
-        print ("=======Start hillClimbingSearch=======")
+        # print ("=======Start hillClimbingSearch=======")
+        climbStepCount = 0
 
         while 1:
             boardVioalation = self.cost
-            self.generateBestBoardWithDioganal()
-            # self.generateBestBoardWithoutDioganal()
+            #self.generateBestBoardWithDioganal()
+            self.generateBestBoardWithoutDioganal()
             
             if boardVioalation == self.cost:
                 break
             self.totSteps += 1
+            climbStepCount += 1
 
             if self.printing == True:
                 print ("Board Violations", self.calHeuristicVal(self.hostBoard))
@@ -217,35 +224,30 @@ class queen:
             
             if self.cost != 0:
                 if self.printing == True:
-                    print ("NO SOLUTION FOUND")
+                    print ("No Solution found")
             else:
                 if self.printing == True:
-                    print ("SOLUTION FOUND")
+                    print ("Solution found")
                 self.totSuccusful += 1
+                self.isSucsses = True
+                
         
-        return self.cost
+        return climbStepCount
     
     def printstatistics(self):
         print ("Total Runs: ", self.totRuns)
         print ("Total Success: ", self.totSuccusful)
+        print ("Total Fail: ", (self.totRuns - self.totSuccusful))
         print ("Success Percentage: ", float(self.totSuccusful)/float(self.totRuns)*100)
-        print ("Average number of steps: ", float(self.totSteps)/float(self.totRuns))             
+        print ("Average number of steps: ", float(self.totSteps)/float(self.totRuns))
+
+        if self.totSuccusful != 0:
+            print("Average steps when success: ", float(self.totStepsSuccusful)/float(self.totSuccusful))
+        if (self.totRuns - self.totSuccusful) != 0:    
+            print("Average steps when failure: ", float(self.totStepsFail)/float(self.totRuns - self.totSuccusful))             
 
 
 if __name__ == "__main__":
  
-    parser = OptionParser()
-
-    parser.add_option("-q", "--quiet", dest="verbose",
-                   action="store_false", default=False,
-                   help="Don't print all the moves... wise option if using large numbers")
-
-    parser.add_option("--runCount", dest="runCount", help="Number of random Boards", default=10,
-                   type="int")
-
-
- 
-    (options, args) = parser.parse_args()
- 
-    mboard = queen(printing=options.verbose, runCount=options.runCount)
+    mboard = queen(1000, False)
     mboard.printstatistics()

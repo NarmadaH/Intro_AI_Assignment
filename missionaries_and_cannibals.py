@@ -37,7 +37,7 @@ class stateSpaceInfo():
 
         # h1(n) = (cannibolsRight + missonariesRight) - 1 
         if heuristic == 1:
-            heuristicVal = (nodeValues[0]+nodeValues[1])/2
+            heuristicVal = (nodeValues[0]+nodeValues[1]) - 1
 
         # h2(n) = (cannibolsRight + missonariesRight) / boat 
         if heuristic == 2:
@@ -270,6 +270,6 @@ if __name__ == "__main__":
     # searchAlgorithems('dfs', 'S', 'Z')
 
     # Part 3
-    # searchAlgorithems('astar', 'S', 'Z', 1)
-    # searchAlgorithems('astar', 'S', 'Z', 2)
-    searchAlgorithems('greedybfs', 'S', 'Z')
+    searchAlgorithems('astar', 'S', 'Z', 1)
+    searchAlgorithems('astar', 'S', 'Z', 2)
+    # searchAlgorithems('greedybfs', 'S', 'Z')
