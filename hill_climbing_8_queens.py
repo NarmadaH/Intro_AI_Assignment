@@ -32,7 +32,7 @@ class chessBoard:
 
 
 class queen:
-    def __init__(self, runCount, printing):
+    def __init__(self, runCount, printing, move):
         self.totRuns = runCount
         self.totSuccusful = 0
         self.totSteps = 0
@@ -40,6 +40,7 @@ class queen:
         self.totStepsFail = 0
         self.printing = printing
         self.isSucsses = False
+        self.move = move
 
         # print ("=======Start Queen=======")
 
@@ -54,7 +55,7 @@ class queen:
             self.isSucsses = False
             self.hostBoard = chessBoard()
             self.cost = self.calHeuristicVal(self.hostBoard)
-            climbStepCount = self.hillClimbingSearch()
+            climbStepCount = self.hillClimbingSearch(move)
 
             if self.isSucsses == True:
                 self.totStepsSuccusful +=climbStepCount
@@ -203,15 +204,18 @@ class queen:
         self.cost = tempLow  
 
 
-    def hillClimbingSearch(self):
+    def hillClimbingSearch(self, move):
 
         # print ("=======Start hillClimbingSearch=======")
         climbStepCount = 0
 
         while 1:
             boardVioalation = self.cost
-            #self.generateBestBoardWithDioganal()
-            self.generateBestBoardWithoutDioganal()
+
+            if (move == 1):
+                self.generateBestBoardWithoutDioganal()
+            elif (move == 2):   
+                self.generateBestBoardWithDioganal()
             
             if boardVioalation == self.cost:
                 break
@@ -249,5 +253,7 @@ class queen:
 
 if __name__ == "__main__":
  
-    mboard = queen(1000, False)
+    mboard = queen(1000, False, 2)
+
+    print ("8 Queens Problem - Hill Climbing")
     mboard.printstatistics()
