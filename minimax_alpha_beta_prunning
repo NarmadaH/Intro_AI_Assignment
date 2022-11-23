@@ -1,0 +1,135 @@
+import math
+import random
+
+MAXIMUM, MINIMUN = math.inf, -math.inf
+ 
+
+def minimax(depth, nodeIndex, maximumStart, values, childNodes, treeDepth):
+  
+    if depth == treeDepth:
+        return values[nodeIndex]
+ 
+    if maximumStart:
+      
+        best = MINIMUN 
+        for i in range(0, childNodes):             
+            val = minimax(depth + 1, nodeIndex * childNodes + i, False, values, childNodes, treeDepth) 
+            #print ("max round val: ", nodeIndex, i, val)            
+            best = max(best, val) 
+            #print ("### max round best: ", nodeIndex, best) 
+
+        print ("\n************* Max: ", nodeIndex, best)              
+        return best
+      
+    else:
+        best = MAXIMUM 
+        for i in range(0, childNodes):          
+            val = minimax(depth + 1, nodeIndex * childNodes + i, True, values, childNodes, treeDepth)
+            #print ("min round val: ", nodeIndex, i, val)
+            best = min(best, val)  
+            #print ("### min round best: ", nodeIndex, best) 
+
+        print ("\n************** Min: ", nodeIndex, best)           
+        return best
+
+
+def alphaBeta(depth, nodeIndex, maximumStart, values, alpha, beta, childNodes, treeDepth):
+  
+    if depth == treeDepth:
+        return values[nodeIndex]
+ 
+    if maximumStart:
+      
+        best = MINIMUN
+ 
+        for i in range(0, childNodes):             
+            val = alphaBeta(depth + 1, nodeIndex * childNodes + i, False, values, alpha, beta, childNodes, treeDepth)
+            best = max(best, val)
+            alpha = max(alpha, best)
+ 
+            if beta <= alpha:
+                break
+          
+        return best
+      
+    else:
+        best = MAXIMUM
+ 
+        for i in range(0, childNodes):
+          
+            val = alphaBeta(depth + 1, nodeIndex * childNodes + i, True, values, alpha, beta, childNodes, treeDepth)
+            best = min(best, val)
+            beta = min(beta, best)
+ 
+            if beta <= alpha:
+                break
+          
+        return best
+
+
+if __name__ == "__main__":
+  
+    # Test 1 - 2 ply tree
+    ternimalNodes = [3,12,8, 2,4,6, 14,5,2]
+    childNodes = 3
+    treeDepth = math.log(len(ternimalNodes), childNodes)
+    
+    print("##### Mini Max Algorithem for ply games ######")
+    print ("Tree :", ternimalNodes)
+    print ("No of nodes :", len(ternimalNodes))
+    print ("Child nodes per Node :", childNodes) 
+    print ("Tress depth: ", treeDepth)
+
+    # Mini-Max Test
+    print("The optimal value of tree by MiniMax:", minimax(0, 0, True, ternimalNodes, childNodes, treeDepth))
+
+    # Alpha-Beta Test
+    print("The optimal value of tree by AlphaBeta:", alphaBeta(0, 0, True, ternimalNodes, MINIMUN, MAXIMUM, childNodes, treeDepth))
+ 
+
+
+    # Test 2 - 3 ply tree
+    ternimalNodes1 = [3,12,8, 2,4,6, 7,4,6, 14,5,2, 14,11,12, 3,7,8, 8,9,10, 11,14,5, 13,14,13]
+    childNodes1 = 3
+    treeDepth1 = math.log(len(ternimalNodes1), childNodes1)
+    
+    print("##### Mini Max Algorithem for ply games ######")
+    print ("Tree :", ternimalNodes1)
+    print ("No of nodes :", len(ternimalNodes1))
+    print ("Child nodes per Node :", childNodes1) 
+    print ("Tress depth: ", treeDepth1)
+
+    # Mini-Max Test
+    print("The optimal value of tree by MiniMax:", minimax(0, 0, False, ternimalNodes1, childNodes1, treeDepth1))
+
+    # Alpha-Beta Test 
+    print("The optimal value of tree by MiniMax:", alphaBeta(0, 0, False, ternimalNodes1, MINIMUN, MAXIMUM, childNodes1, treeDepth1))
+
+
+
+    # Test 3 - 4 ply tree
+    rand_list=[]
+    n=81
+    for i in range(n):
+        rand_list.append(random.randint(2,14))
+    print(rand_list)
+
+    print("\n *** Print Tree ***")
+    for i in range(0, 81, 3):
+        print (rand_list[i], rand_list[i+1], rand_list[i+2])
+
+
+    childNodes2 = 3
+    treeDepth2 = math.log(len(rand_list), childNodes2)
+    
+    print("##### Mini Max Algorithem for ply games ######")
+    print ("Tree :", rand_list)
+    print ("No of nodes :", len(rand_list))
+    print ("Child nodes per Node :", childNodes2) 
+    print ("Tress depth: ", treeDepth2)
+
+    # Mini-Max Test
+    print("The optimal value of tree by MiniMax:", minimax(0, 0, True, rand_list, childNodes2, treeDepth2))
+
+    # Alpha-Beta Test
+    print("The optimal value of tree by AlphaBeta:", alphaBeta(0, 0, True, rand_list, MINIMUN, MAXIMUM, childNodes2, treeDepth2))
