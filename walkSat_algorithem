@@ -16,6 +16,7 @@ def getSatCount(model, clauses):
 		if modelSatisfies(model, [clauses[i]]):
 			count = count+1
 
+	print ("getSatCount", count)
 	return count
 
 
@@ -38,6 +39,7 @@ def getVariableFalseClauses(model, clauses):
 			variables.update(clauses[i])
 
 	variables = set(map(abs, variables))
+	print ("getVariableFalseClauses", variables)
 	return variables
 
 
@@ -62,36 +64,36 @@ def flipVariablesRandom(model, input, var):
 
 
 def checkMinConflictingVars(model, clauses, v, n):
-	varcombs = list(map(list, itertools.combinations([i for i in range(1, n+1)], v)))
+	varCombinations = list(map(list, itertools.combinations([i for i in range(1, n+1)], v)))
 
-	maxsat = 0
-	maxsatidx = 0
+	maxSatisfy = 0
+	maxSatisfyIndx = 0
 
-	for i in range(len(varcombs)):
-		doVariableFlip(model, varcombs[i])
+	for i in range(len(varCombinations)):
+		doVariableFlip(model, varCombinations[i])
 		
-		satcnt = getSatCount(model, clauses)
-		if satcnt > maxsat:
-			maxsat = satcnt
-			maxsatidx = i
+		satCount = getSatCount(model, clauses)
+		if satCount > maxSatisfy:
+			maxSatisfy = satCount
+			maxSatisfyIndx = i
 
-		doVariableFlip(model, varcombs[i])
+		doVariableFlip(model, varCombinations[i])
 
-	doVariableFlip(model, varcombs[maxsatidx])
+	doVariableFlip(model, varCombinations[maxSatisfyIndx])
 
 
-def WalkSAT(n,m,clauses,p,maxit,maxv):
+def WalkSAT(n,m,clauses,p,maxTry,maxFlip):
 	model = [random.choice([0,1]) for i in range(n)]
-	totalassignments = 0
+	totAssignmentCount = 0
 
-	for v in range(1,maxv+1):
-		maxi = maxit
+	for v in range(1,maxFlip+1):
+		maxi = maxTry
 		while maxi > 0:
 			maxi = maxi-1
-			totalassignments = totalassignments + 1
+			totAssignmentCount = totAssignmentCount + 1
 
 			if modelSatisfies(model, clauses):
-				return model, totalassignments
+				return model, totAssignmentCount
 
 			s = getVariableFalseClauses(model, clauses)
 
@@ -101,11 +103,11 @@ def WalkSAT(n,m,clauses,p,maxit,maxv):
 			else:
 				checkMinConflictingVars(model, clauses, v, n)
 
-	return [], totalassignments
+	return [], totAssignmentCount
 
 
 def PrintModel(model):
-	print("The variables to be assigned true are: (remaining to be assigned false)")
+	print("Solution - Assign True to following variables - Rest Assign False")
 	for i in range(len(model)):
 		if model[i]==1:
 			print(i+1, end=" ")
@@ -114,18 +116,22 @@ def PrintModel(model):
 
 def main():
 
-	print("Input the set of clauses in DIMACS format")
+	print("Give Input : ")
 
 	while True:
 		comment = input()
 		if comment[0]=='p':
 			break
 
-	n = int(comment.split()[2])	#Number of variables
-	m = int(comment.split()[3]) #Number of clauses
-	p = 0.5	#Probability of choosing random walk move
+	#Number of variables		
+	n = int(comment.split()[2])	
 
-	clauses = []	#List of clauses
+	#Number of clauses
+	m = int(comment.split()[3]) 
+
+
+	#List of clauses
+	clauses = []	
 
 	for i in range(m):
 		temp = []		
@@ -133,19 +139,19 @@ def main():
 		temp = clause[:-1]
 		clauses.append(temp)
 
-	print("Input maximum number of assignments to be tried in each run: ")
-	maxit = int(input())
-	print("Input maximum number of variables to be simultaneously flipped: ")
-	maxv = int(input())
+	#Probability of choosing random walk move, maxTry, MaxFlip
+	p = 0.5	
+	maxTry = 3
+	maxFlip = 3
 
-	model, totalassignments = WalkSAT(n,m,clauses,p,maxit, maxv)
+	model, totAssignmentCount = WalkSAT(n,m,clauses,p,maxTry, maxFlip)
 
 	if model:
-		print("Total assignments tried : {}".format(totalassignments))
+		print("Success : Total assignments tried : {}".format(totAssignmentCount))
 		PrintModel(model)
 
 	else:
-		print("Couldn't find a satisfying assignment")
+		print("Fail : Couldn't find a satisfying assignment")
 
 
 if __name__ == "__main__":
